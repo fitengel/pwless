@@ -73,7 +73,7 @@ Once deployed, the service exposes the following 4 endpoints:
 #### /login
 Sends an sms with a login code to the provided phone number.
 
-```
+```shell
 $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/login \
   -X POST \
   -H "Content-Type: application/json" \
@@ -81,9 +81,9 @@ $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/login \
 ```
 
 #### /verify
-Verifies the 6-digit code that was sent by SMS to the provided phone number. It logs in and returns a `token` if successful, or an error if the code is invalid.
+Verifies the 6-digit code that was sent by SMS to the provided phone number. It logs in and returns a `token` if successful, or returns an error if the code is invalid.
 
-```
+```shell
 $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/verify \
   -X POST \
   -H "Content-Type: application/json" \
@@ -94,7 +94,7 @@ $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/verify \
 #### /auth
 Verifies the provided token and returns the user data if the token is valid.
 
-```
+```shell
 $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/auth \
   -X POST \
   -H "Content-Type: application/json" \
@@ -104,7 +104,7 @@ $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/auth \
 #### /update
 Updates the user data of the provided token. Returns an error if the token is invalid.
 
-```
+```shell
 $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/update \
   -X POST \
   -H "Content-Type: application/json" \
