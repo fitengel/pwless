@@ -46,7 +46,7 @@ name: my-app
 usersService:
   component: "@serverless/passwordless"
   
-# this zero configuration component takes no inputs
+# this zero configuration component doesn't need any inputs
 ```
 
 ### 4. Deploy
