@@ -57,6 +57,7 @@ passwordless$ components
   login:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/login'
   verify:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/verify'
   auth:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/auth'
+  update:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/update'
 
 
   38s › dev › passwordless › done
