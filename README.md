@@ -45,8 +45,6 @@ name: my-app
 
 usersService:
   component: "@serverless/passwordless"
-  inputs:
-    name: passwordless-users # optional name
 ```
 
 ### 4. Deploy
