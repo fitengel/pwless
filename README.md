@@ -1,6 +1,13 @@
 # passwordless
 
-A zero configuration passwordless users service powered by [Serverless Components](https://github.com/serverless/components). It extends your application by providing SMS login and a users management backend.
+A zero configuration passwordless login service powered by [Serverless Components](https://github.com/serverless/components). This component enables existing users services to identify users with just a phone number, then verify and authenticate the user with a 6-digit SMS code.
+
+#### Features
+
+- **Zero configuration:** You can spin up the entire service with just a single `components` command
+- **Customizable time-to-live option:** Verification codes expire by default after 5 mins, which is completely customizable with component inputs.
+- **Brute-force reseliant:** Verification codes come with a unique uuid, making it practically impossible to brute-force within the expiration period.
+- **Database cleanup:** All verified codes are automatically deleted from the database to minimize the costs.
 
 &nbsp;
 
@@ -43,10 +50,16 @@ AWS_SECRET_ACCESS_KEY=XXX
 
 name: my-app
 
-usersService:
+passwordless:
   component: "@serverless/passwordless"
+  inputs:
   
-# this zero configuration component doesn't need any inputs
+    # set an optional name
+    name: passwordless-service
+    
+    # set an optional time-to-live setting for verification codes in seconds.
+    # 300 seconds is the default setting.
+    ttl: 60
 ```
 
 ### 4. Deploy
@@ -55,10 +68,8 @@ usersService:
 passwordless$ components
 
   users › outputs:
-  login:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/login'
+  send:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/send'
   verify:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/verify'
-  auth:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/auth'
-  update:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/update'
 
 
   38s › dev › passwordless › done
@@ -68,48 +79,31 @@ passwordless$
 ```
 
 ### 5. Consume
-Once deployed, the service exposes the following 4 endpoints:
+Once deployed, the service exposes the following 2 endpoints, which you could integrate with your existing users backend to authenticate a user (e.g. generate an JWT after verification):
 
-#### /login
+#### /send
 Sends an sms with a login code to the provided phone number.
 
 ```
-$ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/login \
+$ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/send \
   -X POST \
   -H "Content-Type: application/json" \
   -d "{ "number": "+1234567890" }"
 ```
 
+Returns an object with `id`, `number` and `expiresAt` properties that you could use during verification below.
+
 #### /verify
-Verifies the 6-digit code that was sent by SMS to the provided phone number. It logs in and returns a `token` if successful, or returns an error if the code is invalid.
+Verifies the 6-digit code that was sent by SMS to the provided phone number. It requires the `number` and the `id` properties returned from the `/send` call above, along with the `code` that was sent to the user's phone number.
 
 ```
 $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/verify \
   -X POST \
   -H "Content-Type: application/json" \
-  -d "{ "number": "+1234567890", "code": "123456" }"
+  -d "{ "number": "+1234567890", "code": 123456, "id": "xxx-xxx-xxx-xxx" }"
 ```
 
-
-#### /auth
-Verifies the provided token and returns the user data if the token is valid.
-
-```
-$ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/auth \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d "{ "token": "xxx" }"
-```
-
-#### /update
-Updates the user data of the provided token. Returns an error if the token is invalid.
-
-```
-$ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/update \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d "{ "token": "xxx", profile: { "username": "joesmith", "firstName": "joe", "lastName": "smith" } }"
-```
+If the `id`, `number` & `code` properties match, and the code hasn't expired, you'll get an object with `verified: true` property. Otherwise, `verified: false` is returned.
 
 
 &nbsp;
