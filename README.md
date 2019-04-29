@@ -6,7 +6,7 @@ A zero configuration passwordless login service powered by [Serverless Component
 
 - **Zero configuration:** You can spin up the entire service with just a single `components` command
 - **Customizable time-to-live option:** Verification codes expire by default after 5 mins, which is completely customizable with component inputs.
-- **Brute-force reseliant:** Verification codes come with a unique `uuid`, making it practically impossible to brute-force within the expiration period.
+- **Brute-force resilient:** Verification codes come with a unique `uuid`, making it practically impossible to brute-force within the expiration period.
 - **Database cleanup:** All verified codes are automatically deleted from the database to minimize the costs.
 
 &nbsp;
