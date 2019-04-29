@@ -16,6 +16,7 @@ A zero configuration passwordless login service powered by [Serverless Component
 3. [Configure](#3-configure)
 4. [Deploy](#4-deploy)
 5. [Consume](#5-consume)
+6. [Pricing](#6-pricing)
 
 &nbsp;
 
@@ -105,6 +106,8 @@ $ curl https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/verify \
 
 If the `id`, `number` & `code` properties match, and the code hasn't expired, you'll get an object with `verified: true` property. Otherwise, `verified: false` is returned.
 
+### 6. Pricing
+The pricing of using this component is based on the pricing for AWS Lambda, AWS Api Gateway, AWS DynamoDB & AWS SNS/SMS services. However, the majority of the costs would likely come from the SMS feature. [Click here for more info on AWS SMS pricing](https://aws.amazon.com/sns/sms-pricing/)
 
 &nbsp;
 
