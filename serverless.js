@@ -1,5 +1,4 @@
 const path = require('path')
-const crypto = require('crypto')
 const { Component } = require('@serverless/components')
 
 class Passwordless extends Component {
@@ -7,43 +6,38 @@ class Passwordless extends Component {
     this.cli.status('Deploying')
 
     const mono = await this.load('@serverless/mono')
-    const usersTable = await this.load('@serverless/aws-dynamodb', 'usersTable')
+    const codesTable = await this.load('@serverless/aws-dynamodb', 'codesTable')
 
     const name = inputs.name || 'passwordless'
-    const tableName = `${name}-users`
+    const tableName = `${name}-codes`
 
-    // generate a new Json Web Token secret if first deployment
-    // otherwise use the same one stored in state
-    const jwtSecret = this.state.jwtSecret || crypto.randomBytes(64).toString('hex')
+    const ttl = inputs.ttl ? String(inputs.ttl) : '300' // time to live in seconds
 
-    this.state = {
-      jwtSecret
+    if (Number.isNaN(Number(ttl))) {
+      throw Error('TTL property must be a number')
     }
-
-    await this.save()
 
     // deploy table
-    const usersTableInputs = {
+    const codesTableInputs = {
       name: tableName
     }
-    await usersTable(usersTableInputs)
+    await codesTable(codesTableInputs)
 
     // deploy mono lambda
     const monoInputs = {
       name,
       code: path.join(__dirname, 'code'),
       env: {
-        USERS_TABLE: usersTableInputs.name,
-        JWT_SECRET: jwtSecret
+        CODES_TABLE: codesTableInputs.name,
+        TTL: ttl
       }
     }
     const monoOutputs = await mono(monoInputs)
 
     // return useful outputs
     const outputs = {
-      login: `POST ${monoOutputs.url}login`,
-      verify: `POST ${monoOutputs.url}verify`,
-      auth: `POST ${monoOutputs.url}auth`
+      send: `POST ${monoOutputs.url}send`,
+      verify: `POST ${monoOutputs.url}verify`
     }
 
     this.cli.outputs(outputs)
@@ -54,9 +48,9 @@ class Passwordless extends Component {
   async remove() {
     this.cli.status('Removing')
     const mono = await this.load('@serverless/mono')
-    const usersTable = await this.load('@serverless/aws-dynamodb', 'usersTable')
+    const codesTable = await this.load('@serverless/aws-dynamodb', 'codesTable')
 
-    await usersTable.remove()
+    await codesTable.remove()
     await mono.remove()
 
     return {}

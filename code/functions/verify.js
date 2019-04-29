@@ -1,43 +1,60 @@
 const AWS = require('aws-sdk')
-const jwt = require('jsonwebtoken')
 const dynamo = new AWS.DynamoDB.DocumentClient()
 
 module.exports = async (inputs) => {
-  const { number, code } = inputs
+  const { id, number, code } = inputs
+
+  if (typeof id !== 'string') {
+    throw Error(`${id} is not a valid id`)
+  }
 
   if (typeof number !== 'string') {
     throw Error(`${number} is not a valid number`)
   }
 
+  if (Number.isNaN(Number(code)) || String(code).length !== 6) {
+    throw Error(`${number} is not a valid code`)
+  }
+
+  // get code record from the database
   const getParams = {
-    TableName: process.env.USERS_TABLE,
+    TableName: process.env.CODES_TABLE,
     Key: {
-      id: number
+      id
     }
   }
 
   const res = await dynamo.get(getParams).promise()
 
   if (Object.keys(res).length !== 0) {
-    // user/number exists
-    // check if the code matches
-    if (res.Item.code !== code) {
-      throw Error(`Invalid login code for ${number}`)
+    // check if the provided code matches the record
+    const invalidCode = res.Item.code !== Number(code)
+
+    // check if the provided number matches the record
+    const invalidNumber = res.Item.number !== number
+
+    // check if the code expired
+    const currentTime = Math.floor(Date.now() / 1000)
+    const codeExpired = currentTime > res.Item.expiresAt
+
+    if (invalidCode || invalidNumber || codeExpired) {
+      return { valid: false }
     }
 
-    // reset the code for future login
-    res.Item.code = null
-    const putParams = {
-      TableName: process.env.USERS_TABLE,
-      Item: res.Item
+    // delete/clean up the record if it has been verified
+    const deleteParams = {
+      TableName: process.env.CODES_TABLE,
+      Key: {
+        id
+      }
     }
 
-    await dynamo.put(putParams).promise()
+    await dynamo.delete(deleteParams).promise()
 
-    // return token
-    const token = jwt.sign(res.Item, process.env.JWT_SECRET)
-    return { token }
+    return { valid: true }
   }
 
-  throw Error(`${number} not found`)
+  // if we reach this point, then the provided code id was not found
+  // hence it's an invalid request
+  return { valid: false }
 }
