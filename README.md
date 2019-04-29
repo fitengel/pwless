@@ -68,7 +68,7 @@ passwordless:
 ```shell
 passwordless$ components
 
-  users › outputs:
+  passwordless › outputs:
   send:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/send'
   verify:  'POST https://aq7lmtvug9.execute-api.us-east-1.amazonaws.com/dev/verify'
 
