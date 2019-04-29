@@ -1,6 +1,6 @@
 # passwordless
 
-A zero configuration passwordless login service powered by [Serverless Components](https://github.com/serverless/components). This component enables your existing user system to identify users with just a phone number, then verify and authenticate the user with a 6-digit SMS code.
+This [Serverless Component](https://github.com/serverless/components) enables your existing user system to identify users with just a phone number, then verify and authenticate the user with a 6-digit SMS code.  It runs on serverless infrastructure, so it can run with minimal overhead.
 
 #### Features
 
