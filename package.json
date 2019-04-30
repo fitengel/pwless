@@ -11,7 +11,7 @@
     "lint": "eslint . --fix --cache"
   },
   "author": "Serverless, Inc.",
-  "license": "MIT",
+  "license": "Apache",
   "dependencies": {
     "@serverless/mono": "^0.1.0",
     "@serverless/aws-dynamodb": "^0.1.0",
