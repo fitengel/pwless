@@ -1,6 +1,6 @@
 {
   "name": "@serverless/passwordless",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "main": "./serverless.js",
   "publishConfig": {
     "access": "public"
@@ -13,9 +13,9 @@
   "author": "Serverless, Inc.",
   "license": "Apache",
   "dependencies": {
-    "@serverless/mono": "^0.1.0",
-    "@serverless/aws-dynamodb": "^0.1.0",
-    "@serverless/components": "^0.1.0",
+    "@serverless/mono": "^0.2.0",
+    "@serverless/aws-dynamodb": "^0.2.0",
+    "@serverless/components": "^0.2.0",
     "aws-sdk": "^2.0.0",
     "ramda": "^0.26.0"
   },

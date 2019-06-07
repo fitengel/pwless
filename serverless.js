@@ -3,7 +3,7 @@ const { Component } = require('@serverless/components')
 
 class Passwordless extends Component {
   async default(inputs = {}) {
-    this.cli.status('Deploying')
+    this.ui.status('Deploying')
 
     const mono = await this.load('@serverless/mono')
     const codesTable = await this.load('@serverless/aws-dynamodb', 'codesTable')
@@ -36,17 +36,19 @@ class Passwordless extends Component {
 
     // return useful outputs
     const outputs = {
-      send: `POST ${monoOutputs.url}send`,
-      verify: `POST ${monoOutputs.url}verify`
+      send: `POST ${monoOutputs.url}/send`,
+      verify: `POST ${monoOutputs.url}/verify`
     }
 
-    this.cli.outputs(outputs)
+    this.ui.log()
+    this.ui.output('send endpoint', `  ${outputs.send}`)
+    this.ui.output('verify endpoint', `${outputs.verify}`)
 
     return outputs
   }
 
   async remove() {
-    this.cli.status('Removing')
+    this.ui.status('Removing')
     const mono = await this.load('@serverless/mono')
     const codesTable = await this.load('@serverless/aws-dynamodb', 'codesTable')
 
